@@ -1,0 +1,12 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended"],
+  "jsRules": {},
+  "rules": {
+    "no-console": false,
+    "@typescript-eslint/no-explicit-any": ["error"],
+    "no-any": true,
+    "@typescript-eslint/explicit-function-return-type": ["error"]
+  },
+  "rulesDirectory": []
+}
