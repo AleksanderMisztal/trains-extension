@@ -17,9 +17,16 @@ const getLongTickets = () => loadObject<Ticket[]>('./db/long-tickets.json');
 const router = Router();
 
 // get games
-router.get('/', (req, res) => {
-  const gamesInfo = gamesDb.data.map((g: Game) => g.getInfo());
-  res.send(gamesInfo);
+router.get('/', auth, (req, res) => {
+  const { user } = req;
+  if (!user || !user.game) {
+    const gamesInfo = gamesDb.data.map((g: Game) => g.getInfo());
+    res.send(gamesInfo);
+  } else {
+    const { uid, playerId } = user.game;
+    const gamesInfo = gamesDb.data.map((g: Game) => g.getInfo(playerId, uid));
+    res.send(gamesInfo);
+  }
 });
 
 // create a game

@@ -23,6 +23,7 @@ export const auth: RequestHandler = (req: Request, res, next) => {
     if (!user) return res.status(400).send('This user has been deleted.');
 
     req.user = user;
+    console.log('user set!', { user });
     if (!user.game) return next();
 
     const game = gamesDb.get(user.game.uid);

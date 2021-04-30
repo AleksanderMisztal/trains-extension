@@ -5,23 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack serve",
-    "build": "webpack --mode production",
-    "deploy": "npm run build && gcloud app deploy --quiet gcloud/frontend.yaml"
+    "build": "webpack --mode production"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AleksanderMisztal/misztal-dev.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/AleksanderMisztal/misztal-dev/issues"
-  },
-  "homepage": "https://github.com/AleksanderMisztal/misztal-dev#readme",
   "dependencies": {
-    "@material-ui/core": "^4.11.3",
-    "@material-ui/lab": "^4.0.0-alpha.57",
     "axios": "^0.21.1",
     "jwt-decode": "^3.1.2",
     "react": "^17.0.1",
@@ -35,8 +21,10 @@
     "@babel/preset-env": "^7.13.10",
     "@babel/preset-react": "^7.12.13",
     "@babel/runtime": "^7.13.10",
-    "@types/react-dom": "^17.0.2",
     "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.2",
+    "@types/react-router": "^5.1.13",
+    "@types/react-router-dom": "^5.1.7",
     "@types/toastr": "^2.1.38",
     "@types/webpack-env": "^1.16.0",
     "babel-loader": "^8.2.2",

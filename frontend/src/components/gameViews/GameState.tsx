@@ -1,8 +1,8 @@
 import React from 'react';
-import { backend } from '../services/backend';
-import { CurrentGame, Phase } from '../types';
+import { backend } from '../../services/backend';
+import { ActiveGame, Phase } from '../../types';
 
-export const GameState = ({ current }: { current: CurrentGame }) => {
+export const GameState = ({ current }: { current: ActiveGame }) => {
   const waiting = current.phase === Phase.Waiting;
   const inProgress = current.phase === Phase.InProgress;
   return (

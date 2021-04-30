@@ -1,14 +1,8 @@
 import React from 'react';
 import { Tickets } from './Tickets';
-import { ArchiveGame, GameBase, PlayerTickets } from '../types';
+import { ArchiveGame, GameBase, PlayerTickets } from '../../types';
 
-export const FinalState = ({
-  game,
-  goBack,
-}: {
-  game: GameBase;
-  goBack: () => void;
-}) => {
+export const FinalState = ({ game }: { game: GameBase }) => {
   return (
     <>
       {(game as ArchiveGame).players.map(
@@ -20,9 +14,7 @@ export const FinalState = ({
           />
         )
       )}
-      <button className="btn center" onClick={goBack}>
-        Go Back
-      </button>
+      <button className="btn center">Go Back</button>
     </>
   );
 };

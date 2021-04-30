@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Checkbox } from './checkbox';
-import { backend } from '../services/backend';
-import { useSnackbar } from '../contexts/snackbarContext';
-import { CurrentGame, Ticket } from '../types';
+import { Checkbox } from '../common/checkbox';
+import { backend } from '../../services/backend';
+import { useSnackbar } from '../../contexts/snackbarContext';
+import { Ticket } from '../../types';
 
 export const PendingTickets = ({ tickets }: { tickets: Ticket[] }) => {
   const addAlert = useSnackbar();

@@ -4,19 +4,17 @@ import { GameBase, CurrentGame, ActiveGame } from '../types.js';
 interface State {
   games: GameBase[];
   user?: { name: string };
-  current?: CurrentGame;
 }
 
 type Action =
   | { type: 'setuser'; user: { name: string } }
   | { type: 'setgames'; games: GameBase[] }
   | { type: 'addgame'; game: ActiveGame }
-  | { type: 'setcurrent'; current: CurrentGame };
+  | { type: 'modifygame'; game: GameBase };
 
 const initState: State = {
   user: undefined,
   games: [],
-  current: undefined,
 };
 
 const reducer = (state: State, action: Action): State => {
@@ -27,8 +25,13 @@ const reducer = (state: State, action: Action): State => {
       return { ...state, games: action.games };
     case 'addgame':
       return { ...state, games: [...state.games, action.game] };
-    case 'setcurrent':
-      return { ...state, current: action.current };
+    case 'modifygame':
+      const next = { ...state };
+      const idx = next.games.findIndex(
+        (g) => g.gameUid === action.game.gameUid
+      );
+      next.games[idx] = action.game;
+      return next;
     default:
       throw new Error();
   }

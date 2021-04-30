@@ -1,21 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSnackbar } from '../contexts/snackbarContext';
 import { backend } from '../services/backend';
-import { ActiveGame, ArchiveGame, GameBase, Phase, Uid } from '../types';
+import { ActiveGame, ArchiveGame, GameBase, Phase } from '../types';
 
-export const GameForm = ({
-  games,
-  onArchiveSelected,
-}: {
-  games: GameBase[];
-  onArchiveSelected: (gameUid: Uid) => void;
-}) => {
+export const GameForm = ({ games }: { games: GameBase[] }) => {
   const [input, setInput] = useState('');
   const addAlert = useSnackbar();
-
-  useEffect(() => {
-    backend.getGames();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,10 +79,7 @@ export const GameForm = ({
               <tr key={i}>
                 <td>{g.name}</td>
                 <td>{g.maxPlayers}</td>
-                <td
-                  className="btn"
-                  onClick={() => onArchiveSelected(g.gameUid)}
-                >
+                <td className="btn" onClick={() => {}}>
                   Results
                 </td>
               </tr>

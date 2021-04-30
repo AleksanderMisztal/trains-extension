@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
-import { Slide, Snackbar } from '@material-ui/core';
-import { Alert, Color } from '@material-ui/lab';
+
+type Color = 'success' | 'error';
 
 const SnackBarContext = createContext<
   (message: string, severity?: Color, duration?: number) => void
@@ -30,7 +30,7 @@ export const SnackbarProvider = ({ children }) => {
   return (
     <SnackBarContext.Provider value={showMessage}>
       {children}
-      <Snackbar
+      {/*<Snackbar
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'center',
@@ -47,7 +47,7 @@ export const SnackbarProvider = ({ children }) => {
         >
           {message}
         </Alert>
-      </Snackbar>
+      </Snackbar>*/}
     </SnackBarContext.Provider>
   );
 };

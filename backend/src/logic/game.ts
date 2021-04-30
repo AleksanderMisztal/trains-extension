@@ -13,7 +13,6 @@ interface Player {
   userUid: Uid;
   name: string;
   tickets: PlayerTickets;
-  wantedPhase: Phase;
 }
 
 interface GameArgs {
@@ -63,7 +62,7 @@ export class Game {
     this.players = players || [];
   }
 
-  getInfo(playerId?: number): ActiveGame | CurrentGame | ArchiveGame {
+  getInfo(pId?: number, uid?: Uid): ActiveGame | CurrentGame | ArchiveGame {
     const { name, maxPlayers, uid: gameUid, phase, players } = this;
     if (this.phase === Phase.Ended)
       return <ArchiveGame>{
@@ -78,7 +77,7 @@ export class Game {
           tickets,
         })),
       };
-    if (this.phase === Phase.Waiting || playerId === undefined)
+    if (pId === undefined || uid !== this.uid)
       return <ActiveGame>{
         type: 'active',
         name,
@@ -102,8 +101,8 @@ export class Game {
         name,
         ticketCounts: toCounts(tickets),
       })),
-      id: playerId,
-      tickets: this.players[playerId].tickets,
+      id: pId,
+      tickets: this.players[pId].tickets,
     };
   }
 
@@ -116,7 +115,6 @@ export class Game {
         owned: [],
         pending: [],
       },
-      wantedPhase: Phase.Waiting,
     };
     this.players.push(player);
     return id;
@@ -132,10 +130,6 @@ export class Game {
 
     if (newPhase === Phase.Ended && player.tickets.pending.length > 0)
       return 'cant end with pending tickets';
-
-    player.wantedPhase = newPhase;
-    const allWantNext = this.players.every((p) => p.wantedPhase === newPhase);
-    if (!allWantNext) return;
 
     this.phase = newPhase;
     if (newPhase === Phase.Initial)

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Ticket } from '../types';
-import { Checkbox } from './checkbox';
+import { Ticket } from '../../types';
+import { Checkbox } from '../common/checkbox';
 
 export const Tickets: React.FC<{
   title: string;

@@ -27,7 +27,8 @@ const getUser = async (): Promise<User> => {
 };
 
 const getGames = async (): Promise<GameBase[]> => {
-  const response = await http.get('/api/games');
+  console.log({ token });
+  const response = await http.get('/api/games', {}, token);
   const games: GameBase[] = response.data;
   store.dispatch({ type: 'setgames', games });
   return games;
@@ -42,31 +43,30 @@ const createGame = async (name: string): Promise<ActiveGame> => {
 
 const joinGame = async (gameUid: Uid): Promise<CurrentGame> => {
   const response = await http.post('/api/games/join', { gameUid }, token);
-  const current: CurrentGame = response.data;
-  store.dispatch({ type: 'setcurrent', current });
-  return current;
+  const game: CurrentGame = response.data;
+  store.dispatch({ type: 'modifygame', game });
+  return game;
 };
 
 const getCurrentGame = async (): Promise<CurrentGame> => {
   const response = await http.get('/api/games/current', {}, token);
-  const current: CurrentGame = response.data;
-  console.log('getting current', current);
-  store.dispatch({ type: 'setcurrent', current });
-  return current;
+  const game: CurrentGame = response.data;
+  store.dispatch({ type: 'modifygame', game });
+  return game;
 };
 
 const setPhase = async (phase: Phase): Promise<CurrentGame> => {
   const response = await http.post('/api/games/phase', { phase }, token);
-  const current: CurrentGame = response.data;
-  store.dispatch({ type: 'setcurrent', current });
-  return current;
+  const game: CurrentGame = response.data;
+  store.dispatch({ type: 'modifygame', game });
+  return game;
 };
 
 const takeTickets = async (): Promise<CurrentGame> => {
   const response = await http.post('/api/games/take', {}, token);
-  const current: CurrentGame = response.data;
-  store.dispatch({ type: 'setcurrent', current });
-  return current;
+  const game: CurrentGame = response.data;
+  store.dispatch({ type: 'modifygame', game });
+  return game;
 };
 
 const returnTickets = async (toKeep: boolean[]): Promise<CurrentGame> => {
@@ -75,9 +75,9 @@ const returnTickets = async (toKeep: boolean[]): Promise<CurrentGame> => {
     { ticketIds: toKeep },
     token
   );
-  const current: CurrentGame = response.data;
-  store.dispatch({ type: 'setcurrent', current });
-  return current;
+  const game: CurrentGame = response.data;
+  store.dispatch({ type: 'modifygame', game });
+  return game;
 };
 
 export const backend = {
