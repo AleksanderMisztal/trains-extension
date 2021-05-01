@@ -1,19 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router';
 import { useSnackbar } from '../contexts/snackbarContext';
 import { backend } from '../services/backend';
 import { ActiveGame, ArchiveGame, GameBase, Phase } from '../types';
 
-export const GameForm = ({ games }: { games: GameBase[] }) => {
+export const GameForm = ({
+  games,
+  onNewGame,
+}: {
+  games: GameBase[];
+  onNewGame: (g: GameBase) => void;
+}) => {
   const [input, setInput] = useState('');
   const addAlert = useSnackbar();
+  const history = useHistory();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input) {
-      addAlert('Name must be non empty.', 'error');
-      return;
+      return addAlert('Name must be non empty.', 'error');
     }
-    await backend.createGame(input);
+    const game = await backend.createGame(input);
+    onNewGame(game);
     setInput('');
   };
 
@@ -41,7 +49,10 @@ export const GameForm = ({ games }: { games: GameBase[] }) => {
                   <td>{g.maxPlayers}</td>
                   <td
                     className="btn"
-                    onClick={() => backend.joinGame(g.gameUid)}
+                    onClick={async () => {
+                      await backend.joinGame(g.gameUid);
+                      history.push('/game/' + g.gameUid);
+                    }}
                   >
                     Join
                   </td>
@@ -78,8 +89,11 @@ export const GameForm = ({ games }: { games: GameBase[] }) => {
             {endedGames.map((g, i) => (
               <tr key={i}>
                 <td>{g.name}</td>
-                <td>{g.maxPlayers}</td>
-                <td className="btn" onClick={() => {}}>
+                <td>{g.players.length}</td>
+                <td
+                  className="btn"
+                  onClick={() => history.push('/game/' + g.gameUid)}
+                >
                   Results
                 </td>
               </tr>

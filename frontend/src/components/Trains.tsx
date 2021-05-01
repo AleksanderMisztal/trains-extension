@@ -2,30 +2,29 @@ import React, { useEffect, useState } from 'react';
 import { NameForm } from './NameForm';
 import { GameForm } from './GameForm';
 import { GameView } from './gameViews/GameView';
-import { FinalState } from './gameViews/FinalState';
 import { backend } from '../services/backend';
-import { GameBase, Uid } from '../types';
-import { Switch, Route, useHistory } from 'react-router';
+import { GameBase } from '../types';
+import { Switch, Route, useHistory, Redirect } from 'react-router';
 import { NotFoundPage } from './common/NotFoundPage';
+import { useSnackbar } from '../contexts/snackbarContext';
 
-export default function Trains({
-  user,
-  games,
-}: {
-  user: { name: string };
-  games: GameBase[];
-}) {
+export default function Trains() {
   const history = useHistory();
-  const [selectedUid, setSelectedUid] = useState<Uid>(null);
+  const addAlert = useSnackbar();
+
+  const [user, setUser] = useState(undefined);
+  const [games, setGames] = useState<GameBase[]>([]);
+
   useEffect(() => {
     (async () => {
-      await backend.getUser();
-      backend.getGames();
+      const user = await backend.getUser();
+      const games = await backend.getGames();
+      setUser(user);
+      setGames(games);
     })();
   }, []);
 
   const current = games.find((g) => g.type === 'current');
-  const selected = games.find((g) => g.gameUid === selectedUid);
 
   return (
     <>
@@ -37,16 +36,35 @@ export default function Trains({
       <Switch>
         <Route path="/" exact>
           {user && <div className="center">Hello {user.name}!</div>}
-          {!user ? <NameForm /> : <GameForm games={games} />}
+          {!user ? (
+            <NameForm
+              onCreated={async (name: string) => {
+                const user = await backend.createUser(name);
+                setUser(user);
+                addAlert('User created');
+              }}
+            />
+          ) : (
+            <GameForm
+              games={games}
+              onNewGame={(g) => setGames((gs) => [...gs, g])}
+            />
+          )}
         </Route>
-        <Route path="/game/:uid"></Route>
+        <Route
+          path="/game/:uid"
+          children={({ match }) => (
+            <GameView
+              game={games.find((g) => g.gameUid === match.params.uid)}
+            />
+          )}
+        />
         <Route path="/current">
-          <GameView game={current} />
+          <Redirect to={current ? `/game/${current.gameUid}` : '/'} />
         </Route>
-        <Route path={'/final'}>
-          <FinalState game={null} />
+        <Route>
+          <NotFoundPage />
         </Route>
-        <Route component={NotFoundPage} />
       </Switch>
     </>
   );

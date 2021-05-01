@@ -11,7 +11,8 @@ const gamesDb: Collection<Game> = getCollection<Game>(
   'games',
   (gd: Game) => new Game(gd)
 );
-const getShortTickets = () => loadObject<Ticket[]>('./db/short-tickets.json');
+const getShortTickets = () =>
+  loadObject<Ticket[]>('./db/short-tickets.json').splice(20);
 const getLongTickets = () => loadObject<Ticket[]>('./db/long-tickets.json');
 
 const router = Router();
@@ -65,7 +66,6 @@ router.get('/current', auth, (req, res) => {
 
   const { uid: gameUid, playerId } = user.game;
   const game = gamesDb.get(gameUid);
-  console.log('sent ', game.getInfo(playerId));
   res.send(game.getInfo(playerId));
 });
 

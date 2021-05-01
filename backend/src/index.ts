@@ -11,10 +11,14 @@ const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+app.use((req, _res, next) => {
+  console.log('request', req.body);
+  next();
+});
 app.use('/api/games', games);
 app.use('/api/users', users);
 
-app.get('/api/hello', (req, res) => {
+app.get('/api/hello', (_req, res) => {
   res.send('Hello my friend');
 });
 
