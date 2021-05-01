@@ -1,11 +1,10 @@
 import jwt from 'jsonwebtoken';
-import config from 'config';
 import { RequestHandler, Request } from 'express';
 import { Collection, getCollection } from '../db.js';
 import { User } from '../types.js';
 import { Game } from '../logic/game.js';
 
-const jwtPrivateKey: string = config.get('jwtPrivateKey');
+const jwtPrivateKey: string = '8bfb013kwi7dbrygkjckwbefy92378yr8gf782gr4289';
 const usersDb: Collection<User> = getCollection<User>('users');
 const gamesDb: Collection<Game> = getCollection<Game>(
   'games',

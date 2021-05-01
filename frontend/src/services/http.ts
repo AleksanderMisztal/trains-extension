@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-const url = (path: string) => `http://localhost:5000${path}`;
-// const url = (path: string) => `https://192.168.86.96:5000${path}`;
+const BACKEND =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:4001' : '/api';
+const url = (path: string) => `${BACKEND}${path}`;
 
 async function get(endpoint: string, data?: object, token?: string) {
   const response = await axios({

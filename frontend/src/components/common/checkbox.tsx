@@ -7,6 +7,8 @@ export const Checkbox = ({
   checked: boolean;
   onChange: React.ChangeEventHandler;
 }) => {
+  // prevents going from uncontrolled ot controlled
+  checked ??= false;
   return (
     <div className="form-check">
       <input

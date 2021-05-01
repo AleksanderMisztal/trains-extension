@@ -62,7 +62,7 @@ export class Game {
     this.players = players || [];
   }
 
-  getInfo(pId?: number, uid?: Uid): ActiveGame | CurrentGame | ArchiveGame {
+  getInfo(pId?: number): ActiveGame | CurrentGame | ArchiveGame {
     const { name, maxPlayers, uid: gameUid, phase, players } = this;
     if (this.phase === Phase.Ended)
       return <ArchiveGame>{
@@ -77,7 +77,7 @@ export class Game {
           tickets,
         })),
       };
-    if (pId === undefined || uid !== this.uid)
+    if (pId === undefined)
       return <ActiveGame>{
         type: 'active',
         name,

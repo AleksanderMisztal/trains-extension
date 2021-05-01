@@ -9,7 +9,7 @@ module.exports = {
   entry: path.resolve(__dirname, 'src/index.tsx'),
   devtool: 'inline-source-map',
   output: {
-    path: path.resolve(__dirname, 'gcloud/dist'),
+    path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.[contenthash].js',
     publicPath: '/',
   },

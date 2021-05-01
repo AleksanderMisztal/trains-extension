@@ -7,7 +7,7 @@ import { User } from '../types.js';
 
 const usersDb: Collection<User> = getCollection('users');
 const router = Router();
-const jwtPrivateKey: string = config.get('jwtPrivateKey');
+const jwtPrivateKey = '8bfb013kwi7dbrygkjckwbefy92378yr8gf782gr4289';
 
 // create a user
 router.post('/', (req, res) => {

@@ -11,8 +11,11 @@ const gamesDb: Collection<Game> = getCollection<Game>(
   'games',
   (gd: Game) => new Game(gd)
 );
-const getShortTickets = () =>
-  loadObject<Ticket[]>('./db/short-tickets.json').splice(20);
+const getShortTickets = () => {
+  const ts = loadObject<Ticket[]>('./db/short-tickets.json');
+  ts.length = 40;
+  return ts;
+};
 const getLongTickets = () => loadObject<Ticket[]>('./db/long-tickets.json');
 
 const router = Router();
@@ -25,7 +28,9 @@ router.get('/', auth, (req, res) => {
     res.send(gamesInfo);
   } else {
     const { uid, playerId } = user.game;
-    const gamesInfo = gamesDb.data.map((g: Game) => g.getInfo(playerId, uid));
+    const gamesInfo = gamesDb.data.map((g: Game) =>
+      uid === g.uid ? g.getInfo(playerId) : g.getInfo()
+    );
     res.send(gamesInfo);
   }
 });

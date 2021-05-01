@@ -1,13 +1,10 @@
-import config from 'config';
 import express from 'express';
 import cors from 'cors';
 import users from './routes/users.js';
 import games from './routes/games.js';
 
-if (!config.get('jwtPrivateKey')) console.log('private key not found');
-
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4001;
 
 app.use(cors());
 app.use(express.json());

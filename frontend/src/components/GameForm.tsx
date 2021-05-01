@@ -1,27 +1,21 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
+import { GameContext } from '../contexts/gameContext';
 import { useSnackbar } from '../contexts/snackbarContext';
 import { backend } from '../services/backend';
 import { ActiveGame, ArchiveGame, GameBase, Phase } from '../types';
 
-export const GameForm = ({
-  games,
-  onNewGame,
-}: {
-  games: GameBase[];
-  onNewGame: (g: GameBase) => void;
-}) => {
-  const [input, setInput] = useState('');
+export const GameForm = () => {
   const addAlert = useSnackbar();
   const history = useHistory();
+  const [input, setInput] = useState('');
+  const { games, setGames, setCurrent } = useContext(GameContext);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input) {
-      return addAlert('Name must be non empty.', 'error');
-    }
+    if (!input) return addAlert('Name must be non empty.', 'error');
     const game = await backend.createGame(input);
-    onNewGame(game);
+    setGames((gs: GameBase[]) => [...gs, game]);
     setInput('');
   };
 
@@ -50,8 +44,9 @@ export const GameForm = ({
                   <td
                     className="btn"
                     onClick={async () => {
-                      await backend.joinGame(g.gameUid);
-                      history.push('/game/' + g.gameUid);
+                      const game = await backend.joinGame(g.gameUid);
+                      setCurrent(game);
+                      history.push('/game/' + game.gameUid);
                     }}
                   >
                     Join

@@ -1,19 +1,42 @@
-import React from 'react';
-import { CurrentGame as TCurrentGame, Phase } from '../../types';
+import React, { useContext } from 'react';
+import { Phase } from '../../types';
 import { PendingTickets } from './PendingTickets';
-import { GameState } from './GameState';
+import { ActiveGame } from './ActiveGame';
 import { Tickets } from './Tickets';
+import { backend } from '../../services/backend';
+import { useSnackbar } from '../../contexts/snackbarContext';
+import { GameContext } from '../../contexts/gameContext';
 
-export const CurrentGame = ({ game }: { game: TCurrentGame }) => {
-  const waiting = game.phase === Phase.Waiting;
+export const CurrentGame = () => {
+  const { getCurrent, setCurrent } = useContext(GameContext);
+  const current = getCurrent();
+  const addAlert = useSnackbar();
+  if (!current) return <>Loading...</>;
+  const waiting = current.phase === Phase.Waiting;
+
+  const returnTickets = async (toKeep: boolean[]) => {
+    if (toKeep.filter((k) => k).length === 0)
+      return addAlert('Keep at least one ticket', 'error');
+    const current = await backend.returnTickets(toKeep);
+    setCurrent(current);
+  };
+
+  const takeTickets = async () => {
+    const current = await backend.takeTickets();
+    setCurrent(current);
+  };
 
   return (
     <>
-      <GameState current={game} />
+      <ActiveGame game={current} />
       {!waiting && (
         <>
-          <PendingTickets tickets={game.tickets.pending} />
-          <Tickets title="Owned tickets" tickets={game.tickets.owned} />
+          <PendingTickets
+            tickets={current.tickets.pending}
+            onReturn={returnTickets}
+            takeTickets={takeTickets}
+          />
+          <Tickets title="Owned tickets" tickets={current.tickets.owned} />
         </>
       )}
     </>

@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Checkbox } from '../common/checkbox';
-import { backend } from '../../services/backend';
-import { useSnackbar } from '../../contexts/snackbarContext';
 import { Ticket } from '../../types';
 
-export const PendingTickets = ({ tickets }: { tickets: Ticket[] }) => {
-  const addAlert = useSnackbar();
-
+export const PendingTickets = ({
+  tickets,
+  onReturn,
+  takeTickets,
+}: {
+  tickets: Ticket[];
+  onReturn: any;
+  takeTickets: any;
+}) => {
   const [toKeep, setToKeep] = useState<boolean[]>(
-    Array.from({ length: tickets.length }, (i) => false)
+    Array.from({ length: tickets.length }, (_i) => false)
   );
 
   useEffect(() => {
@@ -24,17 +28,9 @@ export const PendingTickets = ({ tickets }: { tickets: Ticket[] }) => {
     });
   };
 
-  const returnTickets = () => {
-    if (toKeep.filter((k) => k).length === 0) {
-      addAlert('Keep at least one ticket', 'error');
-      return;
-    }
-    backend.returnTickets(toKeep);
-  };
-
   if (tickets.length === 0)
     return (
-      <button className="btn center" onClick={backend.takeTickets}>
+      <button className="btn center" onClick={takeTickets}>
         Take
       </button>
     );
@@ -59,7 +55,7 @@ export const PendingTickets = ({ tickets }: { tickets: Ticket[] }) => {
           ))}
         </tbody>
       </table>
-      <button className="btn center" onClick={returnTickets}>
+      <button className="btn center" onClick={() => onReturn(toKeep)}>
         Keep selected
       </button>
     </div>

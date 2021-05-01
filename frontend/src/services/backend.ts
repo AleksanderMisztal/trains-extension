@@ -1,6 +1,7 @@
 import http from './http';
 import {
   ActiveGame,
+  ArchiveGame,
   CurrentGame,
   GameBase,
   Phase,
@@ -47,9 +48,9 @@ const getCurrentGame = async (): Promise<CurrentGame> => {
   return game;
 };
 
-const setPhase = async (phase: Phase): Promise<CurrentGame> => {
+const setPhase = async (phase: Phase): Promise<GameBase> => {
   const response = await http.post('/api/games/phase', { phase }, token);
-  const game: CurrentGame = response.data;
+  const game: GameBase = response.data;
   return game;
 };
 
