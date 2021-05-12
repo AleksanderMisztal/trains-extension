@@ -1,13 +1,11 @@
-export type Uid = string;
-
 export interface ObjectWithUid {
-  uid: Uid;
+  uid: string;
 }
 
 export interface User {
   name: string;
-  archive: { uid: Uid; playerId: number }[];
-  game?: { uid: Uid; playerId: number };
+  archive: { uid: string; playerId: number }[];
+  game?: { uid: string; playerId: number };
 }
 
 export enum Phase {
@@ -64,7 +62,8 @@ export interface ArchivePlayer {
 export interface GameBase {
   type: 'active' | 'current' | 'archive';
   name: string;
-  gameUid: Uid;
+  uid: string;
+  code: string;
   phase: Phase;
   maxPlayers: number;
 }

@@ -6,50 +6,38 @@ import React, {
   SetStateAction,
 } from 'react';
 import { backend } from '../services/backend';
-import { ArchiveGame, CurrentGame, GameBase } from '../types';
+import { ArchiveGame, CurrentGame } from '../types';
 
 export const GameContext = createContext<{
   user: { name: string };
-  games: GameBase[];
-  getCurrent: () => CurrentGame;
   setUser: Dispatch<SetStateAction<{ name: string }>>;
-  setGames: React.Dispatch<SetStateAction<GameBase[]>>;
-  setCurrent: (game: CurrentGame) => void;
-  endCurrent: (game: ArchiveGame) => void;
+  current: CurrentGame;
+  setCurrent: Dispatch<SetStateAction<CurrentGame>>;
+  archives: ArchiveGame[];
+  setArchives: Dispatch<SetStateAction<ArchiveGame[]>>;
 }>({
   user: undefined,
-  games: [],
-  getCurrent: undefined,
+  current: undefined,
   setUser: undefined,
-  setGames: undefined,
   setCurrent: undefined,
-  endCurrent: undefined,
+  archives: undefined,
+  setArchives: undefined,
 });
 
 export const GameContextProvider = ({ children }) => {
   const [user, setUser] = useState(undefined);
-  const [games, setGames] = useState<GameBase[]>([]);
-
-  const getCurrent = (): CurrentGame =>
-    games.find((g) => g.type === 'current') as CurrentGame;
-  const setCurrent = (game: CurrentGame) => {
-    if (game.type !== 'current')
-      throw new Error('cant set current to not current');
-    setGames((gs) => gs.map((g) => (g.gameUid === game.gameUid ? game : g)));
-  };
-  const endCurrent = (ended: ArchiveGame) => {
-    setGames((gs) => gs.map((g) => (g.gameUid === ended.gameUid ? ended : g)));
-  };
+  const [current, setCurrent] = useState<CurrentGame>(undefined);
+  const [archives, setArchives] = useState<ArchiveGame[]>(undefined);
 
   useEffect(() => {
-    if (user && games) return;
+    if (user) return;
     (async () => {
       const user = await backend.getUser();
-      const games = await backend.getGames();
       setUser(user);
-      setGames(games);
-      const current = games.find((g) => g.type === 'current');
-      if (current) setCurrent(current as CurrentGame);
+      const archives = await backend.getArchives();
+      setArchives(archives);
+      const current = await backend.getCurrentGame();
+      setCurrent(current);
     })();
   }, []);
 
@@ -57,12 +45,11 @@ export const GameContextProvider = ({ children }) => {
     <GameContext.Provider
       value={{
         user,
-        games,
-        getCurrent,
         setUser,
-        setGames,
+        current,
         setCurrent,
-        endCurrent,
+        archives,
+        setArchives,
       }}
     >
       {children}

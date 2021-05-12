@@ -8,10 +8,6 @@ const port = process.env.PORT || 4001;
 
 app.use(cors());
 app.use(express.json());
-app.use((req, _res, next) => {
-  console.log('request', req.body);
-  next();
-});
 app.use('/api/games', games);
 app.use('/api/users', users);
 

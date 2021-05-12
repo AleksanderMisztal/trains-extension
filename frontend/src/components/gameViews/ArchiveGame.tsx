@@ -5,6 +5,7 @@ import { useHistory } from 'react-router';
 
 export const ArchiveGame = ({ game }: { game: TArchiveGame }) => {
   const history = useHistory();
+  if (!game) return <>Try refreshing</>;
   return (
     <>
       {game.players.map((p, i) => (
@@ -14,8 +15,8 @@ export const ArchiveGame = ({ game }: { game: TArchiveGame }) => {
           tickets={p.tickets.owned}
         />
       ))}
-      <button className="btn center" onClick={() => history.push('/')}>
-        Home
+      <button className="btn center" onClick={() => history.push('/archive')}>
+        Back
       </button>
     </>
   );

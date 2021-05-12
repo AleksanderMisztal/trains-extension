@@ -64,7 +64,8 @@ export interface ArchivePlayer {
 export interface GameBase {
   type: 'active' | 'current' | 'archive';
   name: string;
-  gameUid: Uid;
+  uid: Uid;
+  code: string;
   phase: Phase;
   maxPlayers: number;
 }

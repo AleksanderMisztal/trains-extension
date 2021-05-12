@@ -1,13 +1,5 @@
 import http from './http';
-import {
-  ActiveGame,
-  ArchiveGame,
-  CurrentGame,
-  GameBase,
-  Phase,
-  Uid,
-  User,
-} from '../types.js';
+import { ArchiveGame, CurrentGame, Phase, User } from '../types';
 
 let token = localStorage.getItem('userToken') || '';
 
@@ -24,20 +16,20 @@ const getUser = async (): Promise<User> => {
   return user;
 };
 
-const getGames = async (): Promise<GameBase[]> => {
-  const response = await http.get('/api/games', {}, token);
-  const games: GameBase[] = response.data;
+const getArchives = async (): Promise<ArchiveGame[]> => {
+  const response = await http.get('/api/games/archive', {}, token);
+  const games: ArchiveGame[] = response.data;
   return games;
 };
 
-const createGame = async (name: string): Promise<ActiveGame> => {
-  const response = await http.post('/api/games', { name });
-  const game: ActiveGame = response.data;
+const createGame = async (name: string): Promise<CurrentGame> => {
+  const response = await http.post('/api/games', { name }, token);
+  const game: CurrentGame = response.data;
   return game;
 };
 
-const joinGame = async (gameUid: Uid): Promise<CurrentGame> => {
-  const response = await http.post('/api/games/join', { gameUid }, token);
+const joinGame = async (code: string): Promise<CurrentGame> => {
+  const response = await http.post('/api/games/join', { code }, token);
   const game: CurrentGame = response.data;
   return game;
 };
@@ -48,9 +40,23 @@ const getCurrentGame = async (): Promise<CurrentGame> => {
   return game;
 };
 
-const setPhase = async (phase: Phase): Promise<GameBase> => {
-  const response = await http.post('/api/games/phase', { phase }, token);
-  const game: GameBase = response.data;
+const beginGame = async (): Promise<CurrentGame> => {
+  const response = await http.post(
+    '/api/games/phase',
+    { phase: Phase.Initial },
+    token
+  );
+  const game: CurrentGame = response.data;
+  return game;
+};
+
+const endGame = async (): Promise<ArchiveGame> => {
+  const response = await http.post(
+    '/api/games/phase',
+    { phase: Phase.Ended },
+    token
+  );
+  const game: ArchiveGame = response.data;
   return game;
 };
 
@@ -73,11 +79,12 @@ const returnTickets = async (toKeep: boolean[]): Promise<CurrentGame> => {
 export const backend = {
   createUser,
   getUser,
-  getGames,
+  getArchives,
   createGame,
   joinGame,
   getCurrentGame,
-  setPhase,
+  beginGame,
+  endGame,
   takeTickets,
   returnTickets,
 };

@@ -19,3 +19,8 @@ export const saveObject = (fileName: string, object: object) => {
   const data = JSON.stringify(object);
   fs.writeFileSync(fileName, data);
 };
+
+export const randomCode = (length: number) =>
+  Array.from({ length })
+    .map((_) => String.fromCharCode(97 + Math.floor(Math.random() * 26)))
+    .join('');

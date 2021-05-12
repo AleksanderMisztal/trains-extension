@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { Game } from '../logic/game.js';
 import { TicketStack } from '../logic/ticketStack.js';
 import { getCollection, Collection } from '../db.js';
-import { loadObject } from '../utils.js';
+import { loadObject, randomCode } from '../utils.js';
 import { auth } from '../middleware/auth.js';
 import { Ticket, User, Phase } from '../types.js';
 
@@ -20,39 +20,46 @@ const getLongTickets = () => loadObject<Ticket[]>('./db/long-tickets.json');
 
 const router = Router();
 
-// get games
-router.get('/', auth, (req, res) => {
+// get archive games
+router.get('/archive', auth, (req, res) => {
   const { user } = req;
-  if (!user || !user.game) {
-    const gamesInfo = gamesDb.data.map((g: Game) => g.getInfo());
-    res.send(gamesInfo);
-  } else {
-    const { uid, playerId } = user.game;
-    const gamesInfo = gamesDb.data.map((g: Game) =>
-      uid === g.uid ? g.getInfo(playerId) : g.getInfo()
-    );
-    res.send(gamesInfo);
-  }
+  const games = gamesDb.data.filter(
+    (g) =>
+      g.phase === Phase.Ended &&
+      g.players.map((p) => p.userUid).includes(user.uid)
+  );
+  res.send(games);
 });
 
 // create a game
-router.post('/', (req, res) => {
+router.post('/', auth, (req, res) => {
   const { name } = req.body;
+  const { user } = req;
+  if (!user) return res.status(400).send('No user specified?');
+  if (user.game)
+    return res.status(400).send("Can't join more than one game at a time!");
   const stack = new TicketStack({
     long: getLongTickets(),
     short: getShortTickets(),
   });
-  const game = new Game({ name, stack, maxPlayers: 6 });
+  const code = randomCode(6);
+  const game = new Game({ name, code, stack, maxPlayers: 6 });
   gamesDb.add(game);
-  res.status(201).send(game.getInfo());
+
+  const playerId = game.addPlayer(user.name, user.uid);
+  user.game = { uid: game.uid, playerId };
+  console.log({ code, game });
+  res.send(game.getInfo(playerId));
 });
 
-// all below return game.getInfo(playerId)
 // join a game
 router.post('/join', auth, (req, res) => {
-  const { gameUid } = req.body;
+  const { code } = req.body;
   const { user } = req;
-  const game = gamesDb.get(gameUid);
+  if (!code || !user)
+    return res.status(400).send('Did you forget the token or game code?');
+  const game = gamesDb.data.find((g) => g.code === code);
+  if (!game) return res.status(400).send('Game not found');
   if (user.game)
     return res.status(400).send("Can't join more than one game at a time!");
   if (game.phase !== Phase.Waiting)
@@ -67,7 +74,7 @@ router.post('/join', auth, (req, res) => {
 // get current game
 router.get('/current', auth, (req, res) => {
   const { user } = req;
-  if (!user.game) return res.status(400).send('User not in game.');
+  if (!user.game) return res.send(undefined);
 
   const { uid: gameUid, playerId } = user.game;
   const game = gamesDb.get(gameUid);

@@ -17,6 +17,7 @@ interface Player {
 
 interface GameArgs {
   name: string;
+  code: string;
   stack: TicketStack;
   maxPlayers: number;
   phase?: Phase;
@@ -44,14 +45,16 @@ const toCounts = (tickets: PlayerTickets) => ({
 export class Game {
   name: string;
   uid: Uid;
+  code: string;
   stack: TicketStack;
   maxPlayers: number;
   phase: Phase;
   players: Player[];
   userEnded: boolean[];
 
-  constructor({ name, stack, maxPlayers, phase, players }: GameArgs) {
+  constructor({ name, code, stack, maxPlayers, phase, players }: GameArgs) {
     this.name = name;
+    this.code = code;
     this.stack = new TicketStack(
       stack.tickets,
       stack.options,
@@ -63,13 +66,14 @@ export class Game {
   }
 
   getInfo(pId?: number): ActiveGame | CurrentGame | ArchiveGame {
-    const { name, maxPlayers, uid: gameUid, phase, players } = this;
+    const { name, code, maxPlayers, uid, phase, players } = this;
     if (this.phase === Phase.Ended)
-      return <ArchiveGame>{
+      return {
         type: 'archive',
         name,
+        code,
         maxPlayers,
-        gameUid,
+        uid,
         phase,
         players: players.map(({ name, tickets }, id) => ({
           id,
@@ -78,11 +82,12 @@ export class Game {
         })),
       };
     if (pId === undefined)
-      return <ActiveGame>{
+      return {
         type: 'active',
         name,
+        code,
         maxPlayers,
-        gameUid,
+        uid,
         phase,
         players: players.map(({ name, tickets }, id) => ({
           id,
@@ -90,11 +95,12 @@ export class Game {
           ticketCounts: toCounts(tickets),
         })),
       };
-    return <CurrentGame>{
+    return {
       type: 'current',
       name,
+      code,
       maxPlayers,
-      gameUid,
+      uid,
       phase,
       players: players.map(({ name, tickets }, id) => ({
         id,
@@ -125,7 +131,10 @@ export class Game {
       return `Cant go from ${this.phase} to ${newPhase}`;
 
     const player = this.players[playerId];
-    if (newPhase === Phase.InProgress && player.tickets.pending.length > 0)
+    if (
+      newPhase === Phase.InProgress &&
+      this.players.some((p) => p.tickets.pending.length > 0)
+    )
       return 'cant begin with pending tickets';
 
     if (newPhase === Phase.Ended && player.tickets.pending.length > 0)
@@ -150,8 +159,8 @@ export class Game {
     const { owned, pending } = p.tickets;
     if (!pending) return 'player has no pending tickets';
     if (pending.length !== ticketIds.length) return 'wrong number of tickets';
-    const keep = pending.filter((t: Ticket, i: number) => ticketIds[i]);
-    const ret = pending.filter((t: Ticket, i: number) => !ticketIds[i]);
+    const keep = pending.filter((_: Ticket, i: number) => ticketIds[i]);
+    const ret = pending.filter((_: Ticket, i: number) => !ticketIds[i]);
     const keptMinimum = this.stack.returnTickets(ret);
     if (!keptMinimum) return 'keep more tickets';
     owned.push(...keep);
