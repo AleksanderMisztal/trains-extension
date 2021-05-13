@@ -11,7 +11,7 @@ export const CurrentGame = () => {
   const history = useHistory();
   const { current, setCurrent, setArchives } = useContext(GameContext);
   const addAlert = useSnackbar();
-  if (!current) return <>Loading...</>;
+  if (!current) return <div className="center">No current games found...</div>;
 
   const returnTickets = async (toKeep: boolean[]) => {
     if (toKeep.filter((k) => k).length === 0)
@@ -32,6 +32,7 @@ export const CurrentGame = () => {
 
   const endGame = async () => {
     const ended = await backend.endGame();
+    setCurrent(undefined);
     setArchives((archives) => [ended, ...archives]);
     history.push(`/archive/${current.uid}`);
   };

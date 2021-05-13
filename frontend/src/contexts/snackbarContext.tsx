@@ -15,7 +15,7 @@ const SnackBarContext =
 
 export const SnackbarProvider = ({ children }) => {
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("I'm a custom snackbar");
+  const [message, setMessage] = useState('');
   const [severity, setSeverity] = useState<Color>('success');
   const timers = useRef([]);
 

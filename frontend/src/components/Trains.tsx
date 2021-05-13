@@ -15,33 +15,35 @@ export default function Trains() {
   return (
     <>
       <Navbar />
-      <Switch>
-        <Route path="/" exact>
-          {user && <div className="center">Hello {user.name}!</div>}
-          {!user ? <NameForm /> : <GameForm />}
-        </Route>
-        <Route
-          path="/archive/:uid"
-          children={({ match }) =>
-            archives ? (
-              <ArchiveGame
-                game={archives.find((g) => g.uid === match.params.uid)}
-              />
-            ) : (
-              <>Loading</>
-            )
-          }
-        />
-        <Route path="/current">
-          <CurrentGame />
-        </Route>
-        <Route path="/archive">
-          <Archives />
-        </Route>
-        <Route>
-          <NotFoundPage />
-        </Route>
-      </Switch>
+      <div className="container">
+        <Switch>
+          <Route path="/" exact>
+            {user && <div className="center">Hello {user.name}!</div>}
+            {!user ? <NameForm /> : <GameForm />}
+          </Route>
+          <Route
+            path="/archive/:uid"
+            children={({ match }) =>
+              archives ? (
+                <ArchiveGame
+                  game={archives.find((g) => g.uid === match.params.uid)}
+                />
+              ) : (
+                <>Loading</>
+              )
+            }
+          />
+          <Route path="/current">
+            <CurrentGame />
+          </Route>
+          <Route path="/archive">
+            <Archives />
+          </Route>
+          <Route>
+            <NotFoundPage />
+          </Route>
+        </Switch>
+      </div>
     </>
   );
 }

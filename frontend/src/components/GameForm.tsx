@@ -9,7 +9,7 @@ export const GameForm = () => {
   const history = useHistory();
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
-  const { setCurrent } = useContext(GameContext);
+  const { current, setCurrent } = useContext(GameContext);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +34,13 @@ export const GameForm = () => {
       addAlert("Can't find the game", 'error');
     }
   };
+
+  if (current)
+    return (
+      <button className="btn center" onClick={() => history.push('/current')}>
+        Current game
+      </button>
+    );
 
   return (
     <>
