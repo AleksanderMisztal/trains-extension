@@ -14,17 +14,25 @@ export const GameForm = () => {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) return addAlert('Name must be non empty.', 'error');
-    const game = await backend.createGame(name);
-    setCurrent(game);
-    history.push('/current');
+    try {
+      const game = await backend.createGame(name);
+      setCurrent(game);
+      history.push('/current');
+    } catch (err) {
+      addAlert("Can't create game", 'error');
+    }
   };
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!code) addAlert('Please input the game code.', 'error');
-    const game = await backend.joinGame(code);
-    setCurrent(game);
-    history.push('/current');
+    try {
+      const game = await backend.joinGame(code);
+      setCurrent(game);
+      history.push('/current');
+    } catch (err) {
+      addAlert("Can't find the game", 'error');
+    }
   };
 
   return (
