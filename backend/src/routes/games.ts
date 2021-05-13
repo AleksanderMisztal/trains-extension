@@ -2,21 +2,22 @@ import { Router } from 'express';
 import { Game } from '../logic/game.js';
 import { TicketStack } from '../logic/ticketStack.js';
 import { getCollection, Collection } from '../db.js';
-import { loadObject, randomCode } from '../utils.js';
+import { deepCopy, loadObject, randomCode } from '../utils.js';
 import { auth } from '../middleware/auth.js';
-import { Ticket, User, Phase } from '../types.js';
+import { Ticket, User, Phase, TicketSet, CreateGameRequest } from '../types.js';
 
 const usersDb: Collection<User> = getCollection<User>('users');
 const gamesDb: Collection<Game> = getCollection<Game>(
   'games',
   (gd: Game) => new Game(gd)
 );
-const getShortTickets = () => {
-  const ts = loadObject<Ticket[]>('./db/short-tickets.json');
-  ts.length = 40;
-  return ts;
+const loadTickets = () => {
+  const short = loadObject<Ticket[]>('./db/short-tickets.json');
+  short.length = 40;
+  const long = loadObject<Ticket[]>('./db/long-tickets.json');
+  return { long, short };
 };
-const getLongTickets = () => loadObject<Ticket[]>('./db/long-tickets.json');
+const ticketSets: { [name: string]: TicketSet } = { std: loadTickets() };
 
 const router = Router();
 
@@ -31,24 +32,26 @@ router.get('/archive', auth, (req, res) => {
   res.send(games);
 });
 
+// get ticket sets
+router.get('/sets', (req, res) => {
+  res.send(ticketSets);
+});
+
 // create a game
 router.post('/', auth, (req, res) => {
-  const { name } = req.body;
+  const { name, setName, stackOptions }: CreateGameRequest = req.body;
   const { user } = req;
   if (!user) return res.status(400).send('No user specified?');
   if (user.game)
     return res.status(400).send("Can't join more than one game at a time!");
-  const stack = new TicketStack({
-    long: getLongTickets(),
-    short: getShortTickets(),
-  });
+  const ticketSet = deepCopy(ticketSets[setName]);
+  const stack = new TicketStack(ticketSet, stackOptions);
   const code = randomCode(6);
   const game = new Game({ name, code, stack, maxPlayers: 6 });
   gamesDb.add(game);
 
   const playerId = game.addPlayer(user.name, user.uid);
   user.game = { uid: game.uid, playerId };
-  console.log({ code, game });
   res.send(game.getInfo(playerId));
 });
 

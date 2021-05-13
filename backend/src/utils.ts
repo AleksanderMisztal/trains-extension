@@ -24,3 +24,11 @@ export const randomCode = (length: number) =>
   Array.from({ length })
     .map((_) => String.fromCharCode(97 + Math.floor(Math.random() * 26)))
     .join('');
+
+export const deepCopy = (o: object) => JSON.parse(JSON.stringify(o));
+
+export const pick = (o: any, names: string[]) => {
+  const picked: any = {};
+  names.forEach((n) => (picked[n] = o[n]));
+  return picked;
+};

@@ -71,6 +71,7 @@ th {
   border-radius: 3px;
   background-color: var(--color-primary);
   cursor: pointer;
+  text-decoration: none;
 }
 .btn:focus {
   outline: none;

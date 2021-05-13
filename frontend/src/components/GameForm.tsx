@@ -7,15 +7,16 @@ import { backend } from '../services/backend';
 export const GameForm = () => {
   const addAlert = useSnackbar();
   const history = useHistory();
+  const { current, setCurrent, decks } = useContext(GameContext);
   const [name, setName] = useState('');
+  const [deck, setDeck] = useState<string>('std');
   const [code, setCode] = useState('');
-  const { current, setCurrent } = useContext(GameContext);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) return addAlert('Name must be non empty.', 'error');
     try {
-      const game = await backend.createGame(name);
+      const game = await backend.createGame(name, deck);
       setCurrent(game);
       history.push('/current');
     } catch (err) {
@@ -55,6 +56,13 @@ export const GameForm = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
+          <select value={deck} onChange={(e) => setDeck(e.target.value)}>
+            {Object.keys(decks).map((k) => (
+              <option value={k} key={k}>
+                {k}
+              </option>
+            ))}
+          </select>
           <button type="submit" className="btn fit">
             Create Game
           </button>

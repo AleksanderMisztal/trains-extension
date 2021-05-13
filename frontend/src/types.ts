@@ -41,11 +41,9 @@ export interface StackOptions {
   };
 }
 
-export interface TicketSet {
-  stack?: Ticket[];
-  available?: Ticket[];
-  [key: string]: Ticket[];
-}
+export type TicketSet = {
+  [idx: string]: Ticket[];
+};
 
 export interface ActivePlayer {
   id: number;
@@ -80,3 +78,9 @@ export interface CurrentGame extends ActiveGame {
 export interface ArchiveGame extends GameBase {
   players: ArchivePlayer[];
 }
+
+export type CreateGameRequest = {
+  name: string;
+  setName: string;
+  stackOptions: StackOptions;
+};

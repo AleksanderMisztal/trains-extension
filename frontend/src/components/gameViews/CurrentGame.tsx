@@ -14,10 +14,12 @@ export const CurrentGame = () => {
   if (!current) return <div className="center">No current games found...</div>;
 
   const returnTickets = async (toKeep: boolean[]) => {
-    if (toKeep.filter((k) => k).length === 0)
-      return addAlert('Keep at least one ticket', 'error');
-    const current = await backend.returnTickets(toKeep);
-    setCurrent(current);
+    try {
+      const current = await backend.returnTickets(toKeep);
+      setCurrent(current);
+    } catch (err) {
+      addAlert('Keep more tickets!', 'error');
+    }
   };
 
   const takeTickets = async () => {
@@ -39,7 +41,6 @@ export const CurrentGame = () => {
 
   const waiting = current.phase === Phase.Waiting;
   const inProgress = current.phase === Phase.InProgress;
-  console.log({ current });
 
   return (
     <>
