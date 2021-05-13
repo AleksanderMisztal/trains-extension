@@ -3,6 +3,7 @@ import { useHistory } from 'react-router';
 import { GameContext } from '../contexts/gameContext';
 import { useSnackbar } from '../contexts/snackbarContext';
 import { backend } from '../services/backend';
+import { Modal } from './common/Modal';
 
 export const GameForm = () => {
   const addAlert = useSnackbar();
@@ -11,6 +12,7 @@ export const GameForm = () => {
   const [name, setName] = useState('');
   const [deck, setDeck] = useState<string>('std');
   const [code, setCode] = useState('');
+  const [showDeck, setShowDeck] = useState(false);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +47,22 @@ export const GameForm = () => {
 
   return (
     <>
+      <Modal isOpen={showDeck}>
+        {Object.keys(decks[deck] || {}).map((k) => (
+          <ul key={k}>
+            <h3>{k}</h3>
+            {decks[deck][k].map((t, i) => (
+              <li key={i}>
+                {t.city1}-{'>'}
+                {t.city2}:{t.points}
+              </li>
+            ))}
+          </ul>
+        ))}
+        <button className="btn" onClick={() => setShowDeck(false)}>
+          Hide
+        </button>
+      </Modal>
       <div className="card">
         <form action="submit" onSubmit={handleCreate}>
           <input
@@ -63,6 +81,14 @@ export const GameForm = () => {
               </option>
             ))}
           </select>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              setShowDeck(true);
+            }}
+          >
+            Show deck
+          </button>
           <button type="submit" className="btn fit">
             Create Game
           </button>
