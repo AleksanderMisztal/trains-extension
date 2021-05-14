@@ -35,7 +35,7 @@ export const GameContextProvider = ({ children }) => {
   const [decks, setSets] = useState<{ [name: string]: TicketSet }>({});
 
   useEffect(() => {
-    if (user) return;
+    if (user && decks.std) return;
     (async () => {
       const user = await backend.getUser();
       setUser(user);
@@ -46,7 +46,7 @@ export const GameContextProvider = ({ children }) => {
       const current = await backend.getCurrentGame();
       setCurrent(current);
     })();
-  }, []);
+  }, [user]);
 
   return (
     <GameContext.Provider

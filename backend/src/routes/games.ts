@@ -13,11 +13,13 @@ const gamesDb: Collection<Game> = getCollection<Game>(
 );
 const loadTickets = () => {
   const short = loadObject<Ticket[]>('./db/short-tickets.json');
-  short.length = 40;
+  const eights = short.filter((t) => t.points === 8);
+  short.length = 100;
   const long = loadObject<Ticket[]>('./db/long-tickets.json');
-  return { long, short };
+
+  return { std: { long, short }, vShort: { eights } };
 };
-const ticketSets: { [name: string]: TicketSet } = { std: loadTickets() };
+const ticketSets: { [name: string]: TicketSet } = loadTickets();
 
 const router = Router();
 

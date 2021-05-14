@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useReducer, useState } from 'react';
 import { useHistory } from 'react-router';
+import { ProvidePlugin } from 'webpack';
 import { GameContext } from '../../contexts/gameContext';
 import { useSnackbar } from '../../contexts/snackbarContext';
 import { backend } from '../../services/backend';
 import { StackOptions } from '../../types';
-import { ConfirmingButton } from '../common/ConfirmingButton';
 import { Modal } from '../common/Modal';
 import { StackForm } from './StackForm';
 
@@ -16,6 +16,7 @@ const initialState: StackOptions = {
 };
 
 type Action =
+  | { type: 'reset'; dns: string[] }
   | { type: 'inittake'; name: string; take: number }
   | { type: 'initkeep'; keep: number }
   | { type: 'stdtake'; take: number }
@@ -23,6 +24,11 @@ type Action =
 
 const reducer = (state: StackOptions, action: Action): StackOptions => {
   switch (action.type) {
+    case 'reset':
+      return {
+        ...state,
+        inittake: action.dns.reduce((pv, n) => ({ ...pv, [n]: 2 }), {}),
+      };
     case 'inittake': {
       const { name, take } = action;
       const inittake = { ...state.inittake, [name]: take };
@@ -52,9 +58,7 @@ export const GameForm = () => {
 
   useEffect(() => {
     if (!decks[deck]) return;
-    Object.keys(decks[deck]).forEach((dn) =>
-      dispatch({ type: 'inittake', name: dn, take: 2 })
-    );
+    dispatch({ type: 'reset', dns: Object.keys(decks[deck]) });
   }, [decks, deck]);
 
   const handleCreate = async (e: React.FormEvent) => {
