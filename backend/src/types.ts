@@ -29,18 +29,10 @@ export interface PlayerTickets {
 }
 
 export interface StackOptions {
-  initialTake: {
-    take: number;
-    keep: number;
-    types: {
-      long: number;
-      short: number;
-    };
-  };
-  stdTake: {
-    take: number;
-    keep: number;
-  };
+  inittake: { [name: string]: number };
+  initkeep: number;
+  stdtake: number;
+  stdkeep: number;
 }
 
 export type TicketSet = {

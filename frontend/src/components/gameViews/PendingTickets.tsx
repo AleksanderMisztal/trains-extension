@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Checkbox } from '../common/checkbox';
+import { Checkbox } from '../common/form/Checkbox';
 import { Ticket } from '../../types';
 
 export const PendingTickets = ({

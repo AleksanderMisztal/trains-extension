@@ -6,6 +6,7 @@ import { backend } from '../../services/backend';
 import { useSnackbar } from '../../contexts/snackbarContext';
 import { GameContext } from '../../contexts/gameContext';
 import { useHistory } from 'react-router';
+import { ConfirmingButton } from '../common/ConfirmingButton';
 
 export const CurrentGame = () => {
   const history = useHistory();
@@ -66,15 +67,21 @@ export const CurrentGame = () => {
         {waiting && (
           <>
             Game code: {current.code}
-            <button className="btn center" onClick={beginGame}>
+            <ConfirmingButton
+              warning="Other players will not be able to join. Continue?"
+              action={beginGame}
+            >
               All joined?
-            </button>
+            </ConfirmingButton>
           </>
         )}
         {inProgress && (
-          <button className="btn center" onClick={endGame}>
+          <ConfirmingButton
+            warning="The game will end immediately."
+            action={endGame}
+          >
             End
-          </button>
+          </ConfirmingButton>
         )}
       </div>
       {!waiting && (

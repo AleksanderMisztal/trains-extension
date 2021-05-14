@@ -2,18 +2,13 @@ import { shuffle } from '../utils.js';
 import { Ticket, TicketSet, StackOptions } from '../types.js';
 
 const defaultStackOptions: StackOptions = {
-  initialTake: {
-    take: 6,
-    keep: 2,
-    types: {
-      long: 2,
-      short: 4,
-    },
+  initkeep: 2,
+  inittake: {
+    long: 2,
+    short: 4,
   },
-  stdTake: {
-    take: 3,
-    keep: 1,
-  },
+  stdtake: 3,
+  stdkeep: 1,
 };
 
 export class TicketStack {
@@ -37,7 +32,7 @@ export class TicketStack {
   // gives initial tickets
   takeInitial(): Ticket[] {
     const take = [];
-    const typeCountPairs = Object.entries(this.options.initialTake.types);
+    const typeCountPairs = Object.entries(this.options.inittake);
     for (const [type, count] of typeCountPairs) {
       take.push(...this.tickets[type].splice(-count, count));
     }
@@ -57,7 +52,7 @@ export class TicketStack {
 
   // pop options.stdTake.take tickets from the top of the stack
   takeTickets(): Ticket[] {
-    const { take } = this.options.stdTake;
+    const take = this.options.stdtake;
     if (this.tickets.stack.length < take) {
       this.tickets.stack = [
         ...shuffle(this.tickets.returned),
@@ -71,9 +66,12 @@ export class TicketStack {
 
   // returns true on success, false otherwise
   returnTickets(tickets: Ticket[]): boolean {
-    const { take, keep } = this.gameStarted
-      ? this.options.stdTake
-      : this.options.initialTake;
+    const o = this.options;
+    const take = this.gameStarted
+      ? o.stdtake
+      : Object.values(o.inittake).reduce((a, b) => a + b, 0);
+    const keep = this.gameStarted ? o.stdkeep : o.initkeep;
+
     if (tickets.length > take - keep) return false;
     this.tickets.returned.push(...tickets);
     return true;

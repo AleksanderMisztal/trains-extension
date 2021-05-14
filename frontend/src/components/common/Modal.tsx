@@ -1,35 +1,36 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
+import styled from 'styled-components';
 
-const s_modal: React.CSSProperties = {
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  backgroundColor: '#FFF',
-  padding: '50px',
-  zIndex: 1000,
-  maxHeight: '60%',
-  overflow: 'scroll',
-  overflowX: 'hidden',
-};
-const s_overlay: React.CSSProperties = {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  backgroundColor: 'rgba(0,0,0,0.7)',
-  zIndex: 1000,
-};
+const Main = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 50px;
+  z-index: 1000;
+  max-height: 60%;
+  overflow: scroll;
+  overflow-x: hidden;
+`;
+const Background = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+`;
 
 export const Modal = ({ children, isOpen }) => {
   if (!isOpen) return <></>;
   return createPortal(
     <>
-      <div style={s_overlay}></div>
-      <div style={s_modal}>{children}</div>
+      <Background />
+      <Main>{children}</Main>
     </>,
-    document.getElementById('root')
+    document.getElementById('modal')
   );
 };

@@ -4,6 +4,7 @@ import {
   CreateGameRequest,
   CurrentGame,
   Phase,
+  StackOptions,
   TicketSet,
   User,
 } from '../types';
@@ -35,21 +36,11 @@ const getArchives = async (): Promise<ArchiveGame[]> => {
   return games;
 };
 
-const createGame = async (name: string, deck: string): Promise<CurrentGame> => {
-  const stackOptions = {
-    initialTake: {
-      take: 7,
-      keep: 3,
-      types: {
-        long: 2,
-        short: 5,
-      },
-    },
-    stdTake: {
-      take: 3,
-      keep: 2,
-    },
-  };
+const createGame = async (
+  name: string,
+  deck: string,
+  stackOptions: StackOptions
+): Promise<CurrentGame> => {
   const body: CreateGameRequest = { name, setName: deck, stackOptions };
   const response = await http.post('/api/games', body, token);
   const game: CurrentGame = response.data;

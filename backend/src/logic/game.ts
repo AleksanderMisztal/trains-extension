@@ -127,6 +127,7 @@ export class Game {
   }
 
   setPhase(playerId: number, newPhase: Phase): string | undefined {
+    if (newPhase === this.phase) return;
     if (newPhase !== next(this.phase))
       return `Cant go from ${this.phase} to ${newPhase}`;
 

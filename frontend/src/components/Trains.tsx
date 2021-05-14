@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { NameForm } from './NameForm';
-import { GameForm } from './GameForm';
+import { GameForm } from './gameForm/GameForm';
 import { Switch, Route } from 'react-router';
 import { NotFoundPage } from './common/NotFoundPage';
 import { GameContext } from '../contexts/gameContext';
@@ -18,8 +18,8 @@ export default function Trains() {
       <div className="container">
         <Switch>
           <Route path="/" exact>
-            {user && <div className="center">Hello {user.name}!</div>}
-            {!user ? <NameForm /> : <GameForm />}
+            {user && <h3>Hello {user.name}!</h3>}
+            {user ? <GameForm /> : <NameForm />}
           </Route>
           <Route
             path="/archive/:uid"

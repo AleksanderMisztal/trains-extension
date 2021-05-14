@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Ticket } from '../../types';
-import { Checkbox } from '../common/checkbox';
+import { Checkbox } from '../common/form/Checkbox';
 
 export const Tickets: React.FC<{
   title: string;
   tickets: Ticket[];
 }> = ({ title, tickets }) => {
   const [completed, setCompleted] = useState<boolean[]>(
-    Array.from({ length: tickets.length }, (v, i) => false)
+    Array.from({ length: tickets.length }, (_) => false)
   );
 
   const handleToggleCompleted = (i: number) => {

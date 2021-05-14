@@ -1,9 +1,43 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import { useHistory } from 'react-router';
-import { GameContext } from '../contexts/gameContext';
-import { useSnackbar } from '../contexts/snackbarContext';
-import { backend } from '../services/backend';
-import { Modal } from './common/Modal';
+import { GameContext } from '../../contexts/gameContext';
+import { useSnackbar } from '../../contexts/snackbarContext';
+import { backend } from '../../services/backend';
+import { StackOptions } from '../../types';
+import { ConfirmingButton } from '../common/ConfirmingButton';
+import { Modal } from '../common/Modal';
+import { StackForm } from './StackForm';
+
+const initialState: StackOptions = {
+  initkeep: 2,
+  inittake: {},
+  stdtake: 3,
+  stdkeep: 1,
+};
+
+type Action =
+  | { type: 'inittake'; name: string; take: number }
+  | { type: 'initkeep'; keep: number }
+  | { type: 'stdtake'; take: number }
+  | { type: 'stdkeep'; keep: number };
+
+const reducer = (state: StackOptions, action: Action): StackOptions => {
+  switch (action.type) {
+    case 'inittake': {
+      const { name, take } = action;
+      const inittake = { ...state.inittake, [name]: take };
+      return { ...state, inittake };
+    }
+    case 'initkeep':
+      return { ...state, initkeep: action.keep };
+
+    case 'stdtake':
+      return { ...state, stdtake: action.take };
+
+    case 'stdkeep':
+      return { ...state, stdkeep: action.keep };
+  }
+};
 
 export const GameForm = () => {
   const addAlert = useSnackbar();
@@ -14,11 +48,20 @@ export const GameForm = () => {
   const [code, setCode] = useState('');
   const [showDeck, setShowDeck] = useState(false);
 
+  const [s, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    if (!decks[deck]) return;
+    Object.keys(decks[deck]).forEach((dn) =>
+      dispatch({ type: 'inittake', name: dn, take: 2 })
+    );
+  }, [decks, deck]);
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) return addAlert('Name must be non empty.', 'error');
     try {
-      const game = await backend.createGame(name, deck);
+      const game = await backend.createGame(name, deck, s);
       setCurrent(game);
       history.push('/current');
     } catch (err) {
@@ -45,6 +88,8 @@ export const GameForm = () => {
       </button>
     );
 
+  if (!decks[deck]) return <>'Loading'</>;
+
   return (
     <>
       <Modal isOpen={showDeck}>
@@ -53,7 +98,7 @@ export const GameForm = () => {
             <h3>{k}</h3>
             {decks[deck][k].map((t, i) => (
               <li key={i}>
-                {t.city1}-{'>'}
+                {t.city1}--
                 {t.city2}:{t.points}
               </li>
             ))}
@@ -89,6 +134,8 @@ export const GameForm = () => {
           >
             Show deck
           </button>
+          <br />
+          <StackForm s={s} dispatch={dispatch} />
           <button type="submit" className="btn fit">
             Create Game
           </button>
